@@ -60,9 +60,19 @@ def gen_merkle_proof(leaves, pos):
     level_pos = pos    # local copy of pos
 
     for level in range(height):
-        #######  YOUR CODE GOES HERE                              ######
-        #######     to hash internal nodes in the tree use the    ######
-        #######     function hash_internal_node(left,right)       ######
+        curr_level_len = 2 ** (height - level)
+        
+        # if the leaf is the right child of the parent, add the left child to the path, and vice versa
+        if level_pos % 2 == 0:
+            path.append(state[level_pos+1])
+        else:
+            path.append(state[level_pos-1])
+
+        # hash the parent of the leaf
+        for i in range(0, curr_level_len, 2):
+            state[i//2] = hash_internal_node(state[i], state[i+1])
+
+        level_pos //= 2
 
     # return a list of hashes that makes up the Merkle proof
     return path
